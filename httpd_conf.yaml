@@ -1,0 +1,21 @@
+---
+- name: manage httpd.conf
+  hosts: web
+  become: true
+
+  tasks:
+  - name: Copy Apache configuration file
+    copy:
+      src: httpd.conf
+      dest: /etc/httpd/conf
+
+    # The notify section calls the handler only when the copy task actually changes the file. That way the service is only restarted if needed - and not each time the playbook is run.
+    notify:
+      - restart_apache
+
+  # The handlers section defines a task that is only run on notification.
+  handlers:
+  - name: restart_apache
+    service:
+      name: httpd
+      state: restarted  

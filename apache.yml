@@ -1,0 +1,33 @@
+---
+# play declaration
+# name of the play
+- name: Apache server installed
+# host for which playbook is to be executed
+  hosts: web
+  # enable user privilage escalation
+  become: true
+
+  # task declaration
+  tasks:
+    # name of the taks
+  - name: latest Apache version installed
+    # module referenced to executed the task
+    ansible.builtin.package:
+      # package name
+      name: httpd
+      # define the wanted state (present, absent, latest) of the package
+      state: latest
+
+  # another task to make sure Apache is enabled and running
+  - name: Apache enabled and running
+    ansible.builtin.service:
+      name: httpd
+      enabled: true
+      state: started
+
+  # copy a file from controller node to managed host
+  - name: copy web.html
+    ansible.builtin.copy:
+      # src: web.html
+      src: "{{ stage }}_web.html"
+      dest: /var/www/html/index.html
